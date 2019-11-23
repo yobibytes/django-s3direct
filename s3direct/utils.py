@@ -66,7 +66,9 @@ def create_upload_data(content_type, key, acl, bucket=None, cache_control=None,
     region = getattr(settings, 'S3DIRECT_REGION', None)
     endpoint = getattr(settings, 'AWS_S3_HOST') or REGIONS.get(region, 's3.amazonaws.com')
 
-    expires_in = datetime.utcnow() + timedelta(seconds=60*5)
+    S3DIRECT_EXPIRES_IN = getattr(settings, 'S3DIRECT_EXPIRES_IN', 60 * 60)
+
+    expires_in = datetime.utcnow() + timedelta(seconds=S3DIRECT_EXPIRES_IN)
     expires = expires_in.strftime('%Y-%m-%dT%H:%M:%S.000Z')
     now_date = datetime.utcnow().strftime('%Y%m%dT%H%M%S000Z')
     raw_date = datetime.utcnow().strftime('%Y%m%d')
