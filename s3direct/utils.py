@@ -65,7 +65,7 @@ def create_upload_data(content_type, key, acl, bucket=None, cache_control=None,
     bucket = bucket or settings.AWS_STORAGE_BUCKET_NAME
     region = getattr(settings, 'S3DIRECT_REGION', None)
     endpoint = getattr(settings, 'AWS_S3_HOST') or REGIONS.get(region, 's3.amazonaws.com')
-
+    port = getattr(settings, 'AWS_S3_PORT', 443)
     S3DIRECT_EXPIRES_IN = getattr(settings, 'S3DIRECT_EXPIRES_IN', 60 * 60)
 
     expires_in = datetime.utcnow() + timedelta(seconds=S3DIRECT_EXPIRES_IN)
@@ -124,8 +124,8 @@ def create_upload_data(content_type, key, acl, bucket=None, cache_control=None,
     signature = hmac.new(signing_key, msg=policy,
                          digestmod=hashlib.sha256).hexdigest()
 
-    structure = getattr(settings, 'S3DIRECT_URL_STRUCTURE', 'https://{0}/{1}')
-    bucket_url = structure.format(endpoint, bucket)
+    structure = getattr(settings, 'S3DIRECT_URL_STRUCTURE', 'https://{0}:{1}/{2}')
+    bucket_url = structure.format(endpoint, port, bucket)
 
     return_dict = {
         # FIXME: .decode() does nothing, b64decode works but is decoding really intended?
